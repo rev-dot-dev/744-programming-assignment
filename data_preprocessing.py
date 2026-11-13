@@ -27,7 +27,7 @@ def load_patient_data(dir):
     top5_dict = {}
     evals_dict = {}
 
-    for patient_file in dir.iterdir():
+    for patient_file in Path(dir).iterdir():
         with open(patient_file, 'r', encoding='utf-8') as f:
             patient_data = json.load(f)
             patient_text = patient_data['title'] + ' ' + patient_data['patient']
