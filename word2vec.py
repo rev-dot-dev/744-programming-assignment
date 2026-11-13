@@ -1,4 +1,4 @@
-from gensim.models import word2vec
+# from gensim.models import word2vec
 from gensim.utils import tokenize
 from gensim import downloader
 from pathlib import Path
@@ -6,26 +6,44 @@ import numpy as np
 import json
 import csv
 
-DATA_DIR = Path("PMC_Patients")
-OUTPUT_PATH = Path("word2vec_embeddings.csv")
-
-embeddings_list = []
+DATA_DIR = Path("PMC-Patients-full-v2")
+EMBEDDING_OUTPUT_PATH = Path("word2vec_embeddings_full.csv")
 word2vec_model = downloader.load('word2vec-google-news-300')
 
-for patient_file in sorted(DATA_DIR.iterdir()):
-    with open(patient_file, 'r', encoding='utf-8') as f:
-        patient_data = json.load(f)
+def compute_document_embedding(text):
+    tokens = list(tokenize(text, lowercase=True))
+    # Compute the average embedding for the document
+    embeddings = np.array([word2vec_model[token] for token in tokens if token in word2vec_model])
+    if embeddings.size > 0:
+        return np.mean(embeddings, axis=0)
+    else:
+        return np.zeros(word2vec_model.vector_size)
 
-        patient_text = ' '.join([patient_data['title'], patient_data['patient']])
-        tokens = list(tokenize(patient_text, lowercase=True))
+def create_embeddings(patient_data):
+    embeddings_array = []
+    for patient_id, data in patient_data.items():
+        
+        text = data['text']
+        embedding = compute_document_embedding(text)
+        embeddings_array.append(embedding)
 
-        patient_embedding = np.array([word2vec_model[token] for token in tokens if token in word2vec_model]).mean(axis=0)
-        embeddings_list.append(patient_embedding)
+    return embeddings_array
 
-with open(OUTPUT_PATH, 'w', newline='', encoding='utf-8') as out:
-    writer = csv.writer(out)
-    writer.writerows(embeddings_list)
+# Could be batched for faster processing
+def w2v_main():
+    files_written = 0
+    with open(EMBEDDING_OUTPUT_PATH, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        for patient_file in sorted(DATA_DIR.iterdir()):
+            with open(patient_file, 'r', encoding='utf-8') as f:
+                patient_data = json.load(f)
+                text = patient_data['title'] + " " + patient_data['patient']
+                embedding = compute_document_embedding(text)
+                writer.writerow(embedding)
+                files_written += 1
+                if files_written % 1000 == 0:
+                    print(f"Processed {files_written} files...")
+    print(f"Finished processing {files_written} patient files.")
 
-
-
-
+if __name__ == "__main__":
+    w2v_main()
