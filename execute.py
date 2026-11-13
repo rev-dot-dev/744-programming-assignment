@@ -2,7 +2,7 @@ from pathlib import Path
 from scipy import sparse
 import numpy as np
 import json
-from tfidf import TFIDF_OUTPUT_PATH
+import tfidf
 import csv
 import sys
 from word2vec import EMBEDDING_OUTPUT_PATH
@@ -18,8 +18,6 @@ patient_dict = {}
 top5_dict = {}
 evals_dict = {}
 
-# Compute word2vec document embeddngs
-
 if __name__ == "__main__":
     dir = sys.argv[1] if len(sys.argv) > 1 else DATA_DIR
 
@@ -27,10 +25,18 @@ if __name__ == "__main__":
     patient_dict, top5_dict, evals_dict = data_preprocessing.load_patient_data(dir)
 
     print("Loading tfidf matrix...")
-    tfidf_matrix = sparse.load_npz(TFIDF_OUTPUT_PATH)
+    try:
+        tfidf_matrix = sparse.load_npz(tfidf.TFIDF_OUTPUT_PATH)
+    except FileNotFoundError:
+        print("File not found, generating tfidf matrix")
+        tfidf_matrix = tfidf.tfidf_main(patient_dict)
 
     print("Loading word2vec embeddings...")
-    embeddings = np.array(list(csv.reader(open(EMBEDDING_OUTPUT_PATH, 'r'))))
+    try:
+        embeddings = np.array(list(csv.reader(open(EMBEDDING_OUTPUT_PATH, 'r'))))
+    except FileNotFoundError:
+        print("File not found, generating embeddings. This may take a while...")
+        embeddings = np.array(list(csv.reader(open(EMBEDDING_OUTPUT_PATH, 'r'))))
 
     """
     print("Generating top 5 similar patients for each patient...")

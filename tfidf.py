@@ -13,13 +13,14 @@ def compute_tfidf_matrix(patient_dict):
 def save_tfidf_matrix(tfidf_matrix, output_path):
     sparse.save_npz(output_path, tfidf_matrix)
 
-def tfidf_main():
-    patient_dict, top5_dict, evals_dict = load_patient_data()
+def tfidf_main(patient_dict):
     tfidf_matrix = compute_tfidf_matrix(patient_dict)
     save_tfidf_matrix(tfidf_matrix, TFIDF_OUTPUT_PATH)
+    return tfidf_matrix
 
 if __name__ == "__main__":
-    tfidf_main()
+    patient_dict, top5_dict, evals_dict = load_patient_data()
+    tfidf_main(patient_dict)
     
 
     
