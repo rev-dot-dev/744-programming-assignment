@@ -1,10 +1,6 @@
 import json
 from pathlib import Path
 
-DATA_DIR = Path("PMC_Patients")
-TOP5PATH = Path("top5s.json")
-OUTPUT_PATH = Path("pr.json")
-
 def get_precision_5(results, similar_patients):
     total = 5
     relevant = set(results).intersection(set(similar_patients.keys()))

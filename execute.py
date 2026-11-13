@@ -1,5 +1,6 @@
 from pathlib import Path
 from scipy import sparse
+import word2vec
 import numpy as np
 import json
 import tfidf
@@ -36,6 +37,7 @@ if __name__ == "__main__":
         embeddings = np.array(list(csv.reader(open(EMBEDDING_OUTPUT_PATH, 'r'))))
     except FileNotFoundError:
         print("File not found, generating embeddings. This may take a while...")
+        word2vec.w2v_main(dir)
         embeddings = np.array(list(csv.reader(open(EMBEDDING_OUTPUT_PATH, 'r'))))
 
     """

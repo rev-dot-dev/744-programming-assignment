@@ -30,11 +30,11 @@ def create_embeddings(patient_data):
     return embeddings_array
 
 # Could be batched for faster processing
-def w2v_main():
+def w2v_main(dir):
     files_written = 0
     with open(EMBEDDING_OUTPUT_PATH, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        for patient_file in sorted(DATA_DIR.iterdir()):
+        for patient_file in sorted(dir.iterdir()):
             with open(patient_file, 'r', encoding='utf-8') as f:
                 patient_data = json.load(f)
                 text = patient_data['title'] + " " + patient_data['patient']
@@ -46,4 +46,4 @@ def w2v_main():
     print(f"Finished processing {files_written} patient files.")
 
 if __name__ == "__main__":
-    w2v_main()
+    w2v_main(DATA_DIR)
