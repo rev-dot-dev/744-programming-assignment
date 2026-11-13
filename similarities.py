@@ -1,16 +1,8 @@
 from pathlib import Path
-import json
-from sklearn.metrics.pairwise import cosine_similarity
-import pandas as pd
 import tqdm
 import numpy as np
 from sklearn.preprocessing import normalize
 from scipy import sparse
-
-DATA_DIR = Path("PMC_Patients")
-TFIDF_MATRIX_FILEPATH = Path("tfidf.csv")
-W2V_FILEPATH = Path("word2vec_embeddings.csv")
-OUTPUT_PATH = Path("top5s.json")
 
 # Returns a list of the top 5 patient uids
 def get_top_5(patient_uid, patient_uids, similarity_vector):
