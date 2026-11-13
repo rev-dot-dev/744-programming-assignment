@@ -1,0 +1,11 @@
+test_data/
+PMC_Patients/
+PMC-Patients-full/
+
+/venv/
+/__pycache__/
+
+*.json
+*.csv
+*.ipynb
+*.npz
